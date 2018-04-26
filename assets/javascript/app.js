@@ -1,88 +1,152 @@
-$( document ).ready(function() {
+$(document).ready(function () {
 
-var questions = [
-    { q: "One plus two", a: "Three", f: "Four,Five,Six,Three" },
-    { q: "Five plus three", a: "Eight", f: "Seven,Nine,Ten,Eight" },
-    { q: "Two minus one", a: "One", f: "Zero,Two,Three,One" },
-    { q: "Nine minus seven", a: "Two", f: "Four,Five,Six,Two" },
-    { q: "Six times three", a: "666", f: "Eighteen,Fifteen,Nine,666" }
-];
-var choices = questions[0].f.split(",");
-console.log(choices)
+    var questions = [
+        { q: "Androphobia", a: "Men", f: "Men,Androids,Women,Robots" },
+        { q: "Gymnophobia", a: "Nudity", f: "Nudity,the Gym,Working Out,Sex" },
+        { q: "Papaphobia", a: "Pope", f: "your Dad,the Pope,Other People's Dad,Your Mom" },
+        { q: "Cyberphobia", a: "Computers", f: "Computers,the Internet,Virtual Reality,Cyborgs" },
+        { q: "Homophobia", a: "Homosexuals", f: "Lesbians,Bisexuals,Transexuals,Homosexuals" }
+    ];
+    var choices = questions[0].f.split(",");
+    // console.log(choices)
 
-var time = 10;
-var intervalId;
-var questionIndex = 0;
-var score = 0;
+    var time = 10;
+    var intervalId;
+    var questionIndex = 0;
+    var correct = 0;
+    var incorrect = 0;
 
-function run() {
-    intervalId = setInterval(decrement, 1000);
-}
+    function run() {
+        intervalId = setInterval(decrement, 1000);
+    }
 
-function qaDisplay() {
+    function qaDisplay() {
 
-    // Runs until out of questions
-    if (questionIndex <= (questions.length - 1)) {
-        var choicesTrack = [];
-        var choices = questions[questionIndex].f.split(",");
+        // Runs until out of questions
+        if (questionIndex <= (questions.length - 1)) {
+            var choicesTrack = [];
+            var choices = questions[questionIndex].f.split(",");
 
-        $("#question").text(questions[questionIndex].q)
+            $("#reset").hide();
+            $("#question").text(questions[questionIndex].q)
 
-        // Iterate however many times
-        for (var i = 0; i < choices.length; i++) {
-            // Keep creating random numbers until the number is unique
-            do {
-                var randomQuestion = Math.floor(Math.random() * choices.length);
-            } while (existingQuestions());
-            console.log(randomQuestion)
-            $("#choice" + i).text(choices[randomQuestion]);
-            // Add the choice to the tracker
-            choicesTrack.push(randomQuestion);
-        }
-
-        // If the current random number already exists in the tracker, return true
-        function existingQuestions() {
-            for (var i = 0; i < choicesTrack.length; i++) {
-                if (choicesTrack[i] === randomQuestion) {
-                    return true;
-                }
+            // Iterate however many times
+            for (var i = 0; i < choices.length; i++) {
+                // Keep creating random numbers until the number is unique
+                do {
+                    var randomQuestion = Math.floor(Math.random() * choices.length);
+                } while (existingQuestions());
+                // console.log(randomQuestion)
+                $("#choice" + i).text("Fear of " + choices[randomQuestion]);
+                // Add the choice to the tracker
+                choicesTrack.push(randomQuestion);
             }
-            return false;
+
+            // If the current random number already exists in the tracker, return true
+            function existingQuestions() {
+                for (var i = 0; i < choicesTrack.length; i++) {
+                    if (choicesTrack[i] === randomQuestion) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+
+
+        }
+        // If there aren't, render the end game screen.
+        else {
+            $(".allChoices").hide();
+            $("#timer").hide();
+            $("#question").text("Game Over!");
+            $("#correct").show().text("Answered Correctly: " + correct + " out of " + questions.length);
+            $("#incorrect").show().text("Answered Incorrectly: " + incorrect + " out of " + questions.length);
+            $("#reset").show();
+            stop();
         }
     }
-    // If there aren't, render the end game screen.
-    else {
-        $(".allChoices").hide();
-        $("#timer").hide();
-        $("#question").text("Game Over!");
-        $("#score").text("Final Score: " + score + " out of " + questions.length);
+
+
+    // Choices listening for clicks
+    $("#choice0").on("click", function () {
+        if ($(this).text().endsWith(questions[questionIndex].a)) {
+            correct = correct + 1;
+        } else {
+            incorrect = incorrect + 1;
+        }
+        next();
+    });
+    $("#choice1").on("click", function () {
+        if ($(this).text().endsWith(questions[questionIndex].a)) {
+            correct = correct + 1;
+        } else {
+            incorrect = incorrect + 1;
+        }
+        next();
+
+    });
+    $("#choice2").on("click", function () {
+        if ($(this).text().endsWith(questions[questionIndex].a)) {
+            correct = correct + 1;
+        } else {
+            incorrect = incorrect + 1;
+        }
+        next();
+    });
+    $("#choice3").on("click", function () {
+        if ($(this).text().endsWith(questions[questionIndex].a)) {
+            correct = correct + 1;
+        } else {
+            incorrect = incorrect + 1;
+        }
+        next();
+    });
+
+
+    $("#reset").on("click", function () {
+        questionIndex = 0;
+        correct = 0;
+        incorrect = 0;
         stop();
-    }
-}
+        $(".allChoices").show();
+        $("#timer").show();
+        $("#question").show();
+        $("#correct").hide();
+        $("#incorrect").hide();
+        $("#reset").hide();
+        run();
+        qaDisplay();
+    })
 
-// Timer countdown
-function decrement() {
-
-    time--;
-
-    $("#timer").text(time);
-
-    if (time === 0) {
+    function next() {
         stop();
         time = 10;
         run();
         questionIndex++;
         qaDisplay();
     }
-}
 
-// Stops timer
-function stop() {
-    clearInterval(intervalId);
-}
 
-run();
-qaDisplay();
+    // Timer countdown
+    function decrement() {
+
+        time--;
+
+        $("#timer").text(time);
+
+        if (time === 0) {
+            next();
+        }
+    }
+
+    // Stops timer
+    function stop() {
+        clearInterval(intervalId);
+    }
+
+    run();
+    qaDisplay();
 
 
 
