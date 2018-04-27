@@ -5,10 +5,13 @@ $(document).ready(function () {
         { q: "Gymnophobia", a: "Nudity", f: "Nudity,the Gym,Working Out,Sex" },
         { q: "Papaphobia", a: "Pope", f: "your Dad,the Pope,Other People's Dad,Your Mom" },
         { q: "Cyberphobia", a: "Computers", f: "Computers,the Internet,Virtual Reality,Cyborgs" },
-        { q: "Homophobia", a: "Homosexuals", f: "Lesbians,Bisexuals,Transexuals,Homosexuals" }
+        { q: "Homophobia", a: "Homosexuals", f: "Lesbians,Bisexuals,Transexuals,Homosexuals" },
+        { q: "Hippophobia", a: "Horses", f: "Horses,Hippopotamus,Hammerhead Shark,Hedgehog" },
+        { q: "Peniaphobia", a: "Poverty", f: "Poverty,Penis,Punishment,Porn" },
+        { q: "Hypegiaphobia", a: "Responsibility", f: "Hygene,Responsibility,Hypocyanocobalaminosis,Cleanliness" },
+        { q: "Harpaxophobia", a: "Robbers", f: "Robbers,Harps,Xylophones,Homosexuals" },
+        { q: "Chionophobia", a: "Snow", f: "Snow,Sun,Rain,Ice" }
     ];
-    var choices = questions[0].f.split(",");
-    // console.log(choices)
 
     var time = 10;
     var intervalId;
@@ -20,6 +23,7 @@ $(document).ready(function () {
         intervalId = setInterval(decrement, 1000);
     }
 
+    // Runs 
     function qaDisplay() {
 
         // Runs until out of questions
@@ -30,13 +34,12 @@ $(document).ready(function () {
             $("#reset").hide();
             $("#question").text(questions[questionIndex].q)
 
-            // Iterate however many times
+            // Iterate length of choices
             for (var i = 0; i < choices.length; i++) {
                 // Keep creating random numbers until the number is unique
                 do {
                     var randomQuestion = Math.floor(Math.random() * choices.length);
                 } while (existingQuestions());
-                // console.log(randomQuestion)
                 $("#choice" + i).text("Fear of " + choices[randomQuestion]);
                 // Add the choice to the tracker
                 choicesTrack.push(randomQuestion);
@@ -51,11 +54,9 @@ $(document).ready(function () {
                 }
                 return false;
             }
-
-
-
         }
-        // If there aren't, render the end game screen.
+
+        // Once out of questions, render the end game screen.
         else {
             $(".allChoices").hide();
             $("#timer").hide();
@@ -69,41 +70,47 @@ $(document).ready(function () {
 
 
     // Choices listening for clicks
-    $("#choice0").on("click", function () {
+    $(".choice").on("click", function () {
+        stop();
         if ($(this).text().endsWith(questions[questionIndex].a)) {
             correct = correct + 1;
-        } else {
-            incorrect = incorrect + 1;
-        }
-        next();
-    });
-    $("#choice1").on("click", function () {
-        if ($(this).text().endsWith(questions[questionIndex].a)) {
-            correct = correct + 1;
-        } else {
-            incorrect = incorrect + 1;
-        }
-        next();
+            $("#timer").text("Correct!");
 
-    });
-    $("#choice2").on("click", function () {
-        if ($(this).text().endsWith(questions[questionIndex].a)) {
-            correct = correct + 1;
         } else {
             incorrect = incorrect + 1;
+            $("#timer").text("Right Answer is " + (questions[questionIndex].a));
         }
-        next();
-    });
-    $("#choice3").on("click", function () {
-        if ($(this).text().endsWith(questions[questionIndex].a)) {
-            correct = correct + 1;
-        } else {
-            incorrect = incorrect + 1;
-        }
-        next();
-    });
+
+        //---------------------------------
+
+            var choice = $(questions[questionIndex].a);
+            console.log(this)
+            console.log(choice)
+            var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+            questions[questionIndex].a + "&api_key=dc6zaTOxFJmzC&limit=10";
+      
+            $.ajax({
+              url: queryURL,
+              method: "GET"
+            }).then(function(response) {
+              var results = response.data;
+              var choiceDiv = $("<div class='item'>");
+              var choiceImg = $("<img>");
+
+              choiceImg.attr("src", results.images.fixed_height.url);
+              choiceDiv.append(choiceImg);
+              $("#gifs-appear-here").prepend(choiceDiiv);
+            });
+      
 
 
+        //---------------------------------
+
+        // setTimeout(($(".choice").off("click")), 2000);
+        setTimeout(next, 2000);
+    });
+
+    // Reset function listening for button
     $("#reset").on("click", function () {
         questionIndex = 0;
         correct = 0;
@@ -127,7 +134,6 @@ $(document).ready(function () {
         qaDisplay();
     }
 
-
     // Timer countdown
     function decrement() {
 
@@ -147,7 +153,5 @@ $(document).ready(function () {
 
     run();
     qaDisplay();
-
-
 
 });
